@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/DmitriyZhevnov/rest-api/internal/config"
-	"github.com/DmitriyZhevnov/rest-api/internal/handlers/user"
+	"github.com/DmitriyZhevnov/rest-api/internal/user"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 )
