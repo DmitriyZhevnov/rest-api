@@ -8,8 +8,16 @@ import (
 )
 
 type Config struct {
-	IsDebug *bool  `yaml:"is_debug"`
-	Listen  Listen `yaml:"listen"`
+	IsDebug *bool   `yaml:"is_debug"`
+	Listen  Listen  `yaml:"listen"`
+	MongoDB MongoDB `json:"mongodb"`
+}
+
+type MongoDB struct {
+	Host       string `json:"host"`
+	Port       string `json:"port"`
+	Database   string `json:"database"`
+	Collection string `json:"collection"`
 }
 
 type Listen struct {
