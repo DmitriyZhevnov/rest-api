@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"time"
 
+	"github.com/DmitriyZhevnov/rest-api/internal/config"
 	"github.com/DmitriyZhevnov/rest-api/internal/handlers/user"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
@@ -16,23 +18,24 @@ func main() {
 	logger.Info("create router")
 	router := httprouter.New()
 
+	cfg := config.GetConfig()
+
 	logger.Info("register user handler")
 	handler := user.NewHandler(logger)
 	handler.Register(router)
 
-	start(router)
-
+	start(router, cfg)
 }
 
-func start(router *httprouter.Router) {
+func start(router *httprouter.Router, cfg *config.Config) {
 	logger := logging.GetLogger()
-
 	logger.Info("start application")
 
-	listener, err := net.Listen("tcp", ":1234")
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", cfg.Listen.BindIP, cfg.Listen.Port))
 	if err != nil {
-		panic(err)
+		logger.Fatal(err)
 	}
+	logger.Infof("server is listening port :%s:%s", cfg.Listen.BindIP, cfg.Listen.Port)
 
 	server := &http.Server{
 		Handler:      router,
@@ -40,6 +43,5 @@ func start(router *httprouter.Router) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	logger.Info("server is listening port 0.0.0.0:1234")
 	logger.Fatal(server.Serve(listener))
 }
