@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/DmitriyZhevnov/rest-api/internal/apperror"
 	"github.com/DmitriyZhevnov/rest-api/internal/user"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -64,7 +65,7 @@ func (d *db) FindOne(ctx context.Context, id string) (u user.User, err error) {
 	result := d.collection.FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
-			// TODO: implement ErrNotFound
+			return u, apperror.ErrNotFound
 		}
 		return u, fmt.Errorf("failed to find one user by id: %s due to error: %v", id, err)
 	}
@@ -106,7 +107,7 @@ func (d *db) Update(ctx context.Context, user user.User) error {
 		return fmt.Errorf("failed to execute update user query. error: %v", err)
 	}
 	if result.MatchedCount == 0 {
-		// TODO: implement ErrNotFound
+		return apperror.ErrNotFound
 	}
 
 	d.logger.Trace("Matched %d documents and modified %d documents", result.MatchedCount, result.ModifiedCount)
@@ -126,7 +127,7 @@ func (d *db) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to execute query. error: %v", err)
 	}
 	if result.DeletedCount == 0 {
-		// TODO: implement ErrNotFound
+		return apperror.ErrNotFound
 	}
 
 	d.logger.Trace("Deleted %d documents", result.DeletedCount)
