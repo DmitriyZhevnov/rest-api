@@ -19,6 +19,11 @@ func MiddleWare(h appHandler) http.HandlerFunc {
 					w.Write(appErr.Marshal())
 					return
 				}
+				if errors.Is(err, InternalServerError) {
+					w.WriteHeader(http.StatusInternalServerError)
+					w.Write(appErr.Marshal())
+					return
+				}
 
 				err = err.(*AppError)
 				w.WriteHeader(http.StatusBadRequest)

@@ -1,4 +1,4 @@
-package user
+package model
 
 type User struct {
 	ID           string `json:"id" bson:"_id,omitempty"`
@@ -11,4 +11,10 @@ type CreateUserDTO struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type UpdateUserDTO struct {
+	Email    string `json:"email,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }

@@ -1,4 +1,4 @@
-package db
+package repository
 
 import (
 	"context"
@@ -6,26 +6,26 @@ import (
 	"fmt"
 
 	"github.com/DmitriyZhevnov/rest-api/internal/apperror"
-	"github.com/DmitriyZhevnov/rest-api/internal/user"
+	"github.com/DmitriyZhevnov/rest-api/internal/model"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type db struct {
+type userMongo struct {
 	collection *mongo.Collection
 	logger     *logging.Logger
 }
 
-func NewStorage(database *mongo.Database, collection string, logger *logging.Logger) user.Storage {
-	return &db{
+func NewUserMongo(database *mongo.Database, collection string, logger *logging.Logger) *userMongo {
+	return &userMongo{
 		collection: database.Collection(collection),
 		logger:     logger,
 	}
 }
 
-func (d *db) Create(ctx context.Context, user user.User) (string, error) {
+func (d *userMongo) Create(ctx context.Context, user model.User) (string, error) {
 	d.logger.Debug("create user")
 	result, err := d.collection.InsertOne(ctx, user)
 	if err != nil {
@@ -41,7 +41,7 @@ func (d *db) Create(ctx context.Context, user user.User) (string, error) {
 	return "", fmt.Errorf("failed to convert objectID to hex. probably oid: %s", oid)
 }
 
-func (d *db) FindAll(ctx context.Context) (u []user.User, err error) {
+func (d *userMongo) FindAll(ctx context.Context) (u []model.User, err error) {
 	cursor, err := d.collection.Find(ctx, bson.M{})
 	if cursor.Err() != nil {
 		return u, fmt.Errorf("failed to find all users due to error: %v", err)
@@ -54,7 +54,7 @@ func (d *db) FindAll(ctx context.Context) (u []user.User, err error) {
 	return u, nil
 }
 
-func (d *db) FindOne(ctx context.Context, id string) (u user.User, err error) {
+func (d *userMongo) FindOne(ctx context.Context, id string) (u model.User, err error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return u, fmt.Errorf("failed to convert hex to ObjectID. hex: %s", id)
@@ -77,7 +77,7 @@ func (d *db) FindOne(ctx context.Context, id string) (u user.User, err error) {
 	return u, nil
 }
 
-func (d *db) Update(ctx context.Context, user user.User) error {
+func (d *userMongo) Update(ctx context.Context, user model.User) error {
 	objectID, err := primitive.ObjectIDFromHex(user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to convert userID to ObjectID. ID=%s", user.ID)
@@ -98,6 +98,16 @@ func (d *db) Update(ctx context.Context, user user.User) error {
 
 	delete(updateUserObj, "_id")
 
+	if user.Email == "" {
+		delete(updateUserObj, "email")
+	}
+	if user.PasswordHash == "" {
+		delete(updateUserObj, "password")
+	}
+	if user.Username == "" {
+		delete(updateUserObj, "username")
+	}
+
 	update := bson.M{
 		"$set": updateUserObj,
 	}
@@ -115,7 +125,7 @@ func (d *db) Update(ctx context.Context, user user.User) error {
 	return nil
 }
 
-func (d *db) Delete(ctx context.Context, id string) error {
+func (d *userMongo) Delete(ctx context.Context, id string) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return fmt.Errorf("failed to convert userID to ObjectID. ID=%s", id)
