@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	ErrNotFound = NewAppError(nil, "not found", "", "23243234")
+	ErrNotFound         = NewAppError(nil, "Not found", "", "23243234")
+	InternalServerError = NewAppError(nil, "Internal Server error", "", "35345")
 )
 
 type AppError struct {
@@ -42,5 +43,5 @@ func (a *AppError) Marshal() []byte {
 }
 
 func systemError(err error) *AppError {
-	return NewAppError(err, "internal system error", err.Error(), "0000000")
+	return NewAppError(err, "internal server error", err.Error(), "0000000")
 }

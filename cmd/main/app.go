@@ -1,13 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
 	"time"
 
 	"github.com/DmitriyZhevnov/rest-api/internal/config"
-	"github.com/DmitriyZhevnov/rest-api/internal/user"
+	"github.com/DmitriyZhevnov/rest-api/internal/handler"
+	"github.com/DmitriyZhevnov/rest-api/internal/repository"
+	"github.com/DmitriyZhevnov/rest-api/internal/service"
+
+	"github.com/DmitriyZhevnov/rest-api/pkg/client/mongodb"
+	"github.com/DmitriyZhevnov/rest-api/pkg/hash"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 )
@@ -20,14 +26,27 @@ func main() {
 
 	cfg := config.GetConfig()
 
+	hasher := hash.NewSHA1Hasher(cfg.Auth.PasswordSalt)
+
 	logger.Info("register user handler")
-	handler := user.NewHandler(logger)
+
+	cfgMongo := cfg.Storage.MongoDB
+	mongoDBClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port, cfgMongo.Database)
+	if err != nil {
+		panic(err)
+	}
+
+	storage := repository.NewRepository(mongoDBClient, cfgMongo.Collection, logger)
+
+	service := service.NewService(hasher, storage, logger)
+
+	handler := handler.NewHandler(service, logger)
 	handler.Register(router)
 
-	start(router, cfg)
+	startServer(router, cfg)
 }
 
-func start(router *httprouter.Router, cfg *config.Config) {
+func startServer(router *httprouter.Router, cfg *config.Config) {
 	logger := logging.GetLogger()
 	logger.Info("start application")
 
