@@ -18,7 +18,7 @@ const (
 func (h *handler) GetList(w http.ResponseWriter, r *http.Request) error {
 	users, err := h.services.FindAll(r.Context())
 	if err != nil {
-		return apperror.InternalServerError
+		return err
 	}
 
 	response.SendResponse(w, 200, users)
@@ -44,7 +44,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) error {
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&request)
 	if err != nil {
-		return err
+		return apperror.NewUnprocessableEntityError(err.Error(), "234346543")
 	}
 
 	id, err := h.services.Create(r.Context(), request)
@@ -65,7 +65,7 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) error {
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&request)
 	if err != nil {
-		return err
+		return apperror.NewUnprocessableEntityError(err.Error(), "23425365")
 	}
 
 	if err = h.services.Update(r.Context(), userID, request); err != nil {

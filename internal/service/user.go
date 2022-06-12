@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/DmitriyZhevnov/rest-api/internal/apperror"
 	"github.com/DmitriyZhevnov/rest-api/internal/model"
 	"github.com/DmitriyZhevnov/rest-api/internal/repository"
 	"github.com/DmitriyZhevnov/rest-api/pkg/hash"
@@ -27,7 +27,7 @@ func NewUserSevice(hasher hash.PasswordHasher, repos repository.User, logger *lo
 func (s *userService) Create(ctx context.Context, dto model.CreateUserDTO) (string, error) {
 	passwordHash, err := s.hasher.Hash(dto.Password)
 	if err != nil {
-		return "", err
+		return "", apperror.NewInternalServerError(err.Error(), "23958493")
 	}
 
 	user := model.User{
@@ -49,13 +49,12 @@ func (s *userService) FindAll(ctx context.Context) ([]model.User, error) {
 
 func (s *userService) Update(ctx context.Context, id string, dto model.UpdateUserDTO) error {
 	if dto.Email == "" && dto.Password == "" && dto.Username == "" {
-		// TODO: add new error
-		return fmt.Errorf("invalid body")
+		return apperror.NewBadRequestError("invalid body", "2340584930")
 	}
 
 	passwordHash, err := s.hasher.Hash(dto.Password)
 	if err != nil {
-		return err
+		return apperror.NewInternalServerError(err.Error(), "2352969590")
 	}
 
 	user := model.User{
