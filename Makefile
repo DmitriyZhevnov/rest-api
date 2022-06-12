@@ -1,2 +1,4 @@
+brun:
+	docker-compose up --build
 run:
-	go run cmd/main/app.go
+	docker-compose up 

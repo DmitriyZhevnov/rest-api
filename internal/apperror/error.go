@@ -2,46 +2,66 @@ package apperror
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 var (
-	ErrNotFound         = NewAppError(nil, "Not found", "", "23243234")
-	InternalServerError = NewAppError(nil, "Internal Server error", "", "35345")
+	errNotFound         = newAppError("Not found")
+	internalServerError = newAppError("Internal Server error")
+	badRequestError     = newAppError("Bad Request")
+	unprocessableEntity = newAppError("Unprocessable Entity")
 )
 
-type AppError struct {
+type appError struct {
 	Err              error  `json:"-"`
-	Message          string `json:"message,omitempty"`
-	DeveloperMessage string `json:"developer_message,omitempty"`
-	Code             string `json:"code,omitempty"`
+	Message          string `json:"message"`
+	DeveloperMessage string `json:"developer_message"`
+	Code             string `json:"code"`
 }
 
-func NewAppError(err error, message, developerMessage, code string) *AppError {
-	return &AppError{
-		Err:              fmt.Errorf(message),
-		Message:          message,
-		DeveloperMessage: developerMessage,
-		Code:             code,
+func newAppError(message string) *appError {
+	return &appError{
+		Message: message,
 	}
 }
 
-func (a *AppError) Error() string {
+func (err *appError) fillFields(developerMessage, code string) *appError {
+	err.DeveloperMessage = developerMessage
+	err.Code = code
+	return err
+}
+
+func NewErrNotFound(developerMessage, code string) *appError {
+	err := errNotFound
+	return err.fillFields(developerMessage, code)
+}
+
+func NewInternalServerError(developerMessage, code string) *appError {
+	err := internalServerError
+	return err.fillFields(developerMessage, code)
+}
+
+func NewBadRequestError(developerMessage, code string) *appError {
+	err := badRequestError
+	return err.fillFields(developerMessage, code)
+}
+
+func NewUnprocessableEntityError(developerMessage, code string) *appError {
+	err := unprocessableEntity
+	return err.fillFields(developerMessage, code)
+}
+
+func (a *appError) Error() string {
 	return a.Message
 }
 
-func (a *AppError) Unwrap() error {
+func (a *appError) Unwrap() error {
 	return a.Err
 }
 
-func (a *AppError) Marshal() []byte {
+func (a *appError) Marshal() []byte {
 	marshal, err := json.Marshal(a)
 	if err != nil {
 		return nil
 	}
 	return marshal
-}
-
-func systemError(err error) *AppError {
-	return NewAppError(err, "internal server error", err.Error(), "0000000")
 }
