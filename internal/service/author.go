@@ -23,3 +23,7 @@ func NewAuthorSevice(repos repository.Author, logger *logging.Logger) *authorSer
 func (s *authorService) FindAll(ctx context.Context) ([]model.Author, error) {
 	return s.repository.FindAll(ctx)
 }
+
+func (s *authorService) FindAuthor(ctx context.Context, id string) (model.Author, error) {
+	return s.repository.FindOne(ctx, id)
+}
