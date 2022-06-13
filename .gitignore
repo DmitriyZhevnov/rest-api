@@ -2,5 +2,5 @@
 .data
 .bin
 
-/configs/app.env
+.env
 /logs/*
