@@ -47,7 +47,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) error {
 		return apperror.NewUnprocessableEntityError(err.Error(), "234346543")
 	}
 
-	id, err := h.services.Create(r.Context(), request)
+	id, err := h.services.User.Create(r.Context(), request)
 	if err != nil {
 		return err
 	}

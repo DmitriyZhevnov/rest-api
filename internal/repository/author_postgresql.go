@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/DmitriyZhevnov/rest-api/internal/model"
 	"github.com/DmitriyZhevnov/rest-api/pkg/client/postgresql"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
+	"github.com/jackc/pgconn"
 )
 
 type authorPostgres struct {
@@ -71,4 +73,27 @@ func (r *authorPostgres) FindOne(ctx context.Context, id string) (model.Author, 
 	}
 
 	return ath, nil
+}
+
+func (r *authorPostgres) Create(ctx context.Context, author model.Author) (string, error) {
+	q := `
+        INSERT INTO author
+            (name, age)
+        VALUES
+               ($1, $2)
+        RETURNING id
+    `
+	r.logger.Trace(fmt.Sprintf("SQL Query: %s", formatQuery(q)))
+	if err := r.client.QueryRow(ctx, q, author.Name, author.Age).Scan(&author.ID); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			pgErr = err.(*pgconn.PgError)
+			newErr := apperror.NewInternalServerError(fmt.Sprintf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState()), "3435456765")
+			r.logger.Error(newErr)
+			return "", newErr
+		}
+		return "", apperror.NewInternalServerError(fmt.Sprintf("error creating author: %v", err), "43656743346")
+	}
+
+	return author.ID, nil
 }
