@@ -19,13 +19,22 @@ type AuthConfig struct {
 }
 
 type Storage struct {
-	MongoDB MongoDB `json:"mongodb"`
+	MongoDB    MongoDB `json:"mongodb"`
+	Postgresql Postgresql
 }
 type MongoDB struct {
 	Host       string `mapstructure:"host"`
 	Port       string `mapstructure:"port"`
 	Database   string `mapstructure:"database"`
 	Collection string `mapstructure:"collection"`
+}
+
+type Postgresql struct {
+	Host     string
+	Port     string
+	Database string
+	Username string
+	Password string
 }
 
 type Listen struct {
@@ -83,6 +92,11 @@ func fromEnv(cfg *Config) error {
 	}
 
 	cfg.Auth.PasswordSalt = viper.GetString("PASSWORD_SALT")
+	cfg.Storage.Postgresql.Host = viper.GetString("HOST")
+	cfg.Storage.Postgresql.Port = viper.GetString("PORT")
+	cfg.Storage.Postgresql.Database = viper.GetString("DATABASE")
+	cfg.Storage.Postgresql.Username = viper.GetString("USERNAME")
+	cfg.Storage.Postgresql.Password = viper.GetString("PASSWORD")
 
 	return nil
 }

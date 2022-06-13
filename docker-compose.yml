@@ -2,9 +2,28 @@ version: "3"
 
 services:
   web:
+    environment:
+      - POSTGRES_USER=${USERNAME}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${DATABASE}
+      - DATABASE_HOST=${HOST}
     build: .
+    restart: on-failure
     ports:
       - 8080:8080
+    depends_on:
+      - postgres
+      - mongodb
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${USERNAME}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${DATABASE}
+      - DATABASE_HOST=${HOST}
+    ports:
+      - "5432:5432"
 
   mongodb:
     image: bitnami/mongodb:latest
