@@ -49,19 +49,20 @@ func GetConfig() *Config {
 	once.Do(func() {
 		logger := logging.GetLogger()
 		logger.Info("read application configuration")
+		instance = &Config{}
+
+		if err := fromEnv(instance); err != nil {
+			logger.Fatal(err)
+		}
 
 		if err := setUpViper(); err != nil {
 			logger.Fatal(err)
 		}
 
-		instance = &Config{}
 		if err := unmarshal(instance); err != nil {
 			logger.Fatal(err)
 		}
 
-		if err := fromEnv(instance); err != nil {
-			logger.Fatal(err)
-		}
 	})
 	return instance
 }
@@ -83,8 +84,7 @@ func unmarshal(cfg *Config) error {
 }
 
 func fromEnv(cfg *Config) error {
-	viper.SetConfigName("app")
-	viper.SetConfigType("env")
+	viper.SetConfigFile(".env")
 
 	err := viper.ReadInConfig()
 	if err != nil {
