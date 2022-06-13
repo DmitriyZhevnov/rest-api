@@ -27,9 +27,12 @@ func NewHandler(services *service.Service, logger *logging.Logger) Handler {
 
 func (h *handler) Register(router *httprouter.Router) {
 	// user routes
-	router.HandlerFunc(http.MethodGet, usersURL, apperror.MiddleWare(h.GetList))
+	router.HandlerFunc(http.MethodGet, usersURL, apperror.MiddleWare(h.GetAllUsers))
 	router.HandlerFunc(http.MethodGet, userURL, apperror.MiddleWare(h.GetUserByUUID))
 	router.HandlerFunc(http.MethodPost, usersURL, apperror.MiddleWare(h.CreateUser))
 	router.HandlerFunc(http.MethodPut, userURL, apperror.MiddleWare(h.UpdateUser))
 	router.HandlerFunc(http.MethodDelete, userURL, apperror.MiddleWare(h.DeleteUser))
+
+	// authors routes
+	router.HandlerFunc(http.MethodGet, authURL, apperror.MiddleWare(h.GetAllAuthors))
 }

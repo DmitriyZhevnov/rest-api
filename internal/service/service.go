@@ -11,6 +11,7 @@ import (
 
 type Service struct {
 	User
+	Author
 }
 
 type User interface {
@@ -21,8 +22,13 @@ type User interface {
 	Delete(ctx context.Context, id string) error
 }
 
+type Author interface {
+	FindAll(ctx context.Context) ([]model.Author, error)
+}
+
 func NewService(hasher hash.PasswordHasher, repos *repository.Repository, logger *logging.Logger) *Service {
 	return &Service{
-		User: NewUserSevice(hasher, repos.User, logger),
+		User:   NewUserSevice(hasher, repos.User, logger),
+		Author: NewAuthorSevice(repos.Author, logger),
 	}
 }

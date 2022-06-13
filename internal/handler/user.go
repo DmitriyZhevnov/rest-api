@@ -15,8 +15,8 @@ const (
 	userURL  = "/users/:uuid"
 )
 
-func (h *handler) GetList(w http.ResponseWriter, r *http.Request) error {
-	users, err := h.services.FindAll(r.Context())
+func (h *handler) GetAllUsers(w http.ResponseWriter, r *http.Request) error {
+	users, err := h.services.User.FindAll(r.Context())
 	if err != nil {
 		return err
 	}

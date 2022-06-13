@@ -4,9 +4,15 @@ import (
 	"context"
 
 	"github.com/DmitriyZhevnov/rest-api/internal/model"
+	"github.com/DmitriyZhevnov/rest-api/pkg/client/postgresql"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+type Repository struct {
+	User
+	Author
+}
 
 type User interface {
 	Create(ctx context.Context, user model.User) (string, error)
@@ -16,12 +22,13 @@ type User interface {
 	Delete(ctx context.Context, id string) error
 }
 
-type Repository struct {
-	User
+type Author interface {
+	FindAll(ctx context.Context) (u []model.Author, err error)
 }
 
-func NewRepository(db *mongo.Database, mongoCollection string, logger *logging.Logger) *Repository {
+func NewRepository(db *mongo.Database, mongoCollection string, client postgresql.Client, logger *logging.Logger) *Repository {
 	return &Repository{
-		User: NewUserMongo(db, mongoCollection, logger),
+		User:   NewUserMongo(db, mongoCollection, logger),
+		Author: NewAuthorPostgres(client, logger),
 	}
 }
