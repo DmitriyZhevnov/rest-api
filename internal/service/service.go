@@ -26,6 +26,7 @@ type Author interface {
 	FindAll(ctx context.Context) ([]model.Author, error)
 	FindAuthor(ctx context.Context, id string) (model.Author, error)
 	Create(ctx context.Context, dto model.CreateAuthorDTO) (string, error)
+	Update(ctx context.Context, id string, dto model.UpdateAuthorDTO) error
 }
 
 func NewService(hasher hash.PasswordHasher, repos *repository.Repository, logger *logging.Logger) *Service {

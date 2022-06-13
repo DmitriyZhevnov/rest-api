@@ -55,3 +55,23 @@ func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) error {
 	response.SendResponse(w, 201, id)
 	return nil
 }
+
+func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) error {
+	request := model.UpdateAuthorDTO{}
+
+	authorID := httprouter.ParamsFromContext(r.Context()).ByName("uuid")
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&request)
+	if err != nil {
+		return apperror.NewUnprocessableEntityError(err.Error(), "235364576")
+	}
+
+	if err = h.services.Author.Update(r.Context(), authorID, request); err != nil {
+		return err
+	}
+
+	response.SendResponse(w, 204, nil)
+	return nil
+}

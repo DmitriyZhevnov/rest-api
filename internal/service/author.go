@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/DmitriyZhevnov/rest-api/internal/apperror"
 	"github.com/DmitriyZhevnov/rest-api/internal/model"
 	"github.com/DmitriyZhevnov/rest-api/internal/repository"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
+	"github.com/DmitriyZhevnov/rest-api/pkg/utils"
 )
 
 type authorService struct {
@@ -35,4 +38,22 @@ func (s *authorService) Create(ctx context.Context, dto model.CreateAuthorDTO) (
 	}
 
 	return s.repository.Create(ctx, author)
+}
+
+func (s *authorService) Update(ctx context.Context, id string, dto model.UpdateAuthorDTO) error {
+	if !utils.IsValidUUID(id) {
+		return apperror.NewErrNotFound(fmt.Sprintf("failed to convert authorID to UUID. ID=%s", id), "23423424")
+	}
+
+	if dto.Name == "" && dto.Age == 0 {
+		return apperror.NewBadRequestError("invalid body", "2340584930")
+	}
+
+	aurhor := model.Author{
+		ID:   id,
+		Name: dto.Name,
+		Age:  dto.Age,
+	}
+
+	return s.repository.Update(ctx, aurhor)
 }

@@ -26,6 +26,7 @@ type Author interface {
 	FindAll(ctx context.Context) (u []model.Author, err error)
 	FindOne(ctx context.Context, id string) (model.Author, error)
 	Create(ctx context.Context, aurhor model.Author) (string, error)
+	Update(ctx context.Context, user model.Author) error
 }
 
 func NewRepository(db *mongo.Database, mongoCollection string, client postgresql.Client, logger *logging.Logger) *Repository {

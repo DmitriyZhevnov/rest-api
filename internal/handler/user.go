@@ -68,7 +68,7 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) error {
 		return apperror.NewUnprocessableEntityError(err.Error(), "23425365")
 	}
 
-	if err = h.services.Update(r.Context(), userID, request); err != nil {
+	if err = h.services.User.Update(r.Context(), userID, request); err != nil {
 		return err
 	}
 

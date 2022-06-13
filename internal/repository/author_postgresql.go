@@ -97,3 +97,21 @@ func (r *authorPostgres) Create(ctx context.Context, author model.Author) (strin
 
 	return author.ID, nil
 }
+
+func (r *authorPostgres) Update(ctx context.Context, user model.Author) error {
+	sqlStatement := `
+		UPDATE author
+		SET name = $2, age = $3
+		WHERE id = $1;`
+	res, err := r.client.Exec(ctx, sqlStatement, user.ID, user.Name, user.Age)
+	if err != nil {
+		return apperror.NewInternalServerError(fmt.Sprintf("error updating author: %v", err), "45675234")
+	}
+
+	count := res.RowsAffected()
+	if count == 0 {
+		apperror.NewErrNotFound(fmt.Sprintf("user with id = %s not found", user.ID), "23454656345")
+	}
+
+	return nil
+}

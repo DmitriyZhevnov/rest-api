@@ -10,3 +10,8 @@ type CreateAuthorDTO struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
 }
+
+type UpdateAuthorDTO struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
