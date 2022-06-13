@@ -75,3 +75,14 @@ func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) error {
 	response.SendResponse(w, 204, nil)
 	return nil
 }
+
+func (h *handler) DeleteAuthor(w http.ResponseWriter, r *http.Request) error {
+	authorID := httprouter.ParamsFromContext(r.Context()).ByName("uuid")
+
+	if err := h.services.Author.Delete(r.Context(), authorID); err != nil {
+		return err
+	}
+
+	response.SendResponse(w, 204, nil)
+	return nil
+}

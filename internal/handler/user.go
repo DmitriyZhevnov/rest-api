@@ -79,7 +79,7 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) error {
 func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request) error {
 	userID := httprouter.ParamsFromContext(r.Context()).ByName("uuid")
 
-	if err := h.services.Delete(r.Context(), userID); err != nil {
+	if err := h.services.User.Delete(r.Context(), userID); err != nil {
 		return err
 	}
 

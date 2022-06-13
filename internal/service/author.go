@@ -57,3 +57,11 @@ func (s *authorService) Update(ctx context.Context, id string, dto model.UpdateA
 
 	return s.repository.Update(ctx, aurhor)
 }
+
+func (s *authorService) Delete(ctx context.Context, id string) error {
+	if !utils.IsValidUUID(id) {
+		return apperror.NewErrNotFound(fmt.Sprintf("failed to convert authorID to UUID. ID=%s", id), "23423424")
+	}
+
+	return s.repository.Delete(ctx, id)
+}

@@ -115,3 +115,20 @@ func (r *authorPostgres) Update(ctx context.Context, user model.Author) error {
 
 	return nil
 }
+
+func (r *authorPostgres) Delete(ctx context.Context, id string) error {
+	sqlStatement := `
+		DELETE FROM author
+		WHERE id = $1;`
+	res, err := r.client.Exec(ctx, sqlStatement, id)
+	if err != nil {
+		return apperror.NewInternalServerError(fmt.Sprintf("error deleting author: %v", err), "6765787565")
+	}
+
+	count := res.RowsAffected()
+	if count == 0 {
+		apperror.NewErrNotFound(fmt.Sprintf("user with id = %s not found", id), "543456587687")
+	}
+
+	return nil
+}
