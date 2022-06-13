@@ -13,9 +13,14 @@ import (
 	"github.com/DmitriyZhevnov/rest-api/internal/service"
 
 	"github.com/DmitriyZhevnov/rest-api/pkg/client/mongodb"
+	"github.com/DmitriyZhevnov/rest-api/pkg/client/postgresql"
 	"github.com/DmitriyZhevnov/rest-api/pkg/hash"
 	"github.com/DmitriyZhevnov/rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
+)
+
+const (
+	maxAttemptsForConnectPostgres = 5
 )
 
 func main() {
@@ -36,7 +41,12 @@ func main() {
 		panic(err)
 	}
 
-	storage := repository.NewRepository(mongoDBClient, cfgMongo.Collection, logger)
+	postgresClient, err := postgresql.NewClient(context.Background(), maxAttemptsForConnectPostgres, cfg.Storage.Postgresql)
+	if err != nil {
+		panic(err)
+	}
+
+	storage := repository.NewRepository(mongoDBClient, cfgMongo.Collection, postgresClient, logger)
 
 	service := service.NewService(hasher, storage, logger)
 
