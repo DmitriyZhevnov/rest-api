@@ -24,6 +24,7 @@ type User interface {
 
 type Author interface {
 	FindAll(ctx context.Context) ([]model.Author, error)
+	FindAuthor(ctx context.Context, id string) (model.Author, error)
 }
 
 func NewService(hasher hash.PasswordHasher, repos *repository.Repository, logger *logging.Logger) *Service {

@@ -12,3 +12,4 @@ PUT / users/:id -- update user -- 204, 404, 400, 422, 500
 DELETE /users/:id -- delete user by id -- 204, 404, 500
 
 GET /authors  -- list of authors -- 200, 500
+GET /users/:id -- user by id -- 200, 404, 500

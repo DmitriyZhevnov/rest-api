@@ -57,3 +57,18 @@ func (r *authorPostgres) FindAll(ctx context.Context) (u []model.Author, err err
 
 	return authors, nil
 }
+
+func (r *authorPostgres) FindOne(ctx context.Context, id string) (model.Author, error) {
+	q := `
+		SELECT id, name, age FROM public.author WHERE id = $1
+	`
+	r.logger.Trace(fmt.Sprintf("SQL Query: %s", formatQuery(q)))
+
+	var ath model.Author
+	err := r.client.QueryRow(ctx, q, id).Scan(&ath.ID, &ath.Name, &ath.Age)
+	if err != nil {
+		return model.Author{}, apperror.NewErrNotFound(fmt.Sprintf("user with id = %s not found", id), "34346234")
+	}
+
+	return ath, nil
+}
