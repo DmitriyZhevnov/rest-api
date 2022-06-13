@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/DmitriyZhevnov/rest-api/internal/apperror"
+	"github.com/DmitriyZhevnov/rest-api/internal/model"
 	"github.com/DmitriyZhevnov/rest-api/pkg/response"
 	"github.com/julienschmidt/httprouter"
 )
@@ -31,5 +34,24 @@ func (h *handler) GetAuthorByUUID(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	response.SendResponse(w, 200, author)
+	return nil
+}
+
+func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) error {
+	request := model.CreateAuthorDTO{}
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&request)
+	if err != nil {
+		return apperror.NewUnprocessableEntityError(err.Error(), "34536453")
+	}
+
+	id, err := h.services.Author.Create(r.Context(), request)
+	if err != nil {
+		return err
+	}
+
+	response.SendResponse(w, 201, id)
 	return nil
 }

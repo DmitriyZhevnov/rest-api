@@ -5,3 +5,8 @@ type Author struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
 }
+
+type CreateAuthorDTO struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}

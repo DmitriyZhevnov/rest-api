@@ -36,4 +36,5 @@ func (h *handler) Register(router *httprouter.Router) {
 	// authors routes
 	router.HandlerFunc(http.MethodGet, authorsURL, apperror.MiddleWare(h.GetAllAuthors))
 	router.HandlerFunc(http.MethodGet, authorURL, apperror.MiddleWare(h.GetAuthorByUUID))
+	router.HandlerFunc(http.MethodPost, authorsURL, apperror.MiddleWare(h.CreateAuthor))
 }

@@ -27,3 +27,12 @@ func (s *authorService) FindAll(ctx context.Context) ([]model.Author, error) {
 func (s *authorService) FindAuthor(ctx context.Context, id string) (model.Author, error) {
 	return s.repository.FindOne(ctx, id)
 }
+
+func (s *authorService) Create(ctx context.Context, dto model.CreateAuthorDTO) (string, error) {
+	author := model.Author{
+		Name: dto.Name,
+		Age:  dto.Age,
+	}
+
+	return s.repository.Create(ctx, author)
+}
