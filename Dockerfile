@@ -1,7 +1,6 @@
 FROM golang:alpine
 
 COPY . /app
-COPY /configs/app.env .
 
 WORKDIR /app
 
