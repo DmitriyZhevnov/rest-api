@@ -1,5 +1,5 @@
 drun:
-	docker-compose up -d
+	docker-compose up -d --build
 run:
 	docker-compose up 
 brun:
