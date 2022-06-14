@@ -1,4 +1,4 @@
-PASSWORD_SALT=
+PASSWORD_SALT=1234
 
 HOST=host.docker.internal
 PORT=5432
